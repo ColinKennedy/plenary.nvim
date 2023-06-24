@@ -36,6 +36,8 @@ local util, parse = {}, {}
 local F = require "plenary.functional"
 local J = require "plenary.job"
 local P = require "plenary.path"
+local curl_helper = require("plenary.curl_helper")
+
 
 -- Utils ----------------------------------------------------
 -------------------------------------------------------------
@@ -120,7 +122,12 @@ parse.raw_body = function(xs)
   if type(xs) == "table" then
     return parse.data_body(xs)
   else
-    return { "--data-raw", xs }
+    if curl_helper.HAS_DATA_RAW_SUPPORT
+    then
+      return { "--raw-data", xs }
+    else
+      return { "--data", xs }
+    end
   end
 end
 
